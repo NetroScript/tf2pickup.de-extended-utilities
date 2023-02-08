@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./data.db"
+}
+
+model SteamUserInformation {
+  steamId       BigInt @id
+  username      String
+  avatar_small  String
+  avatar_medium String
+  avatar_full   String
+  profileUrl    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User[]
+}
+
+// Store logged in Steam Users
+model User {
+  steamId BigInt @id
+
+  steamProfile     SteamUserInformation @relation(fields: [steamId], references: [steamId])
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  UserKOFIDonation UserKOFIDonation[]
+  admin            Boolean              @default(false)
+}
+
+// Store all previous donations in the database
+model KOFIDonation {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  valid            Boolean @default(false)
+  manually_created Boolean @default(false)
+
+  verification_token            String
+  message_id                    String
+  timestamp                     DateTime
+  type                          String
+  is_public                     Boolean
+  from_name                     String
+  message                       String
+  amount                        Float
+  url                           String
+  email                         String
+  currency                      String
+  is_subscription_payment       Boolean
+  is_first_subscription_payment Boolean
+  kofi_transaction_id           String
+  original_JSON                 String
+  UserKOFIDonation              UserKOFIDonation[]
+}
+
+// Store the relation between a donation and a user
+model UserKOFIDonation {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  donation KOFIDonation @relation(fields: [donationId], references: [id])
+  user     User         @relation(fields: [userId], references: [steamId])
+
+  donationId Int
+  userId     BigInt
+}
+
+// Store costs we as provider have to pay
+model CostTransaction {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount      Float
+  description String
+}
