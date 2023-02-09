@@ -1,17 +1,17 @@
 import type { PageServerLoad, Actions } from './$types';
-import { steamAPI } from "$lib/steamapi";
-import prisma from "$lib/database/prisma";
-import { upsertUser } from "$lib/database/user";
+import { steamAPI } from '$lib/steamapi';
+import prisma from '$lib/database/prisma';
+import { upsertUser } from '$lib/database/user';
 
 export const actions = {
   createUserAccount: async ({ cookies, request }) => {
-
     const data = await request.formData();
     const userURL = data.get('userURL');
 
     if (typeof userURL !== 'string') {
       return {
-        createUserAccount: { success: false, error: 'Invalid user URL' } };
+        createUserAccount: { success: false, error: 'Invalid user URL' }
+      };
     }
 
     // Resolve the user URL to a SteamID (any input allowed)
@@ -26,7 +26,7 @@ export const actions = {
       });
 
       if (user) {
-        return  { createUserAccount: { success: true } };
+        return { createUserAccount: { success: true } };
       }
 
       // Create a new user account
@@ -38,20 +38,18 @@ export const actions = {
     return { createUserAccount: { success: true } };
   },
   insertCustomDonation: async ({ cookies, request }) => {
-
     const data = await request.formData();
 
     // Reject if any file is uploaded
     for (const [key, value] of data.entries()) {
       if (!value || typeof value === 'string') continue;
 
-        return {
-          insertCustomDonation: {
-            success: false,
-            error: 'This API does not support file uploads'
-          }
-        };
-
+      return {
+        insertCustomDonation: {
+          success: false,
+          error: 'This API does not support file uploads'
+        }
+      };
     }
     // Check that amount is a valid number
     if (isNaN(Number((data.get('amount') ?? '') as string))) {
@@ -78,8 +76,7 @@ export const actions = {
       };
     }
 
-
-    console.log("Creating custom donation: ", userURL, amount, message, displayName);
+    console.log('Creating custom donation: ', userURL, amount, message, displayName);
 
     let steamID = null;
 
@@ -88,8 +85,7 @@ export const actions = {
       try {
         const steamIDResolved = await steamAPI.resolve(userURL);
 
-        console.log("Resolved user URL to SteamID: ", steamIDResolved)
-
+        console.log('Resolved user URL to SteamID: ', steamIDResolved);
 
         // Check if a user already exists with this SteamID
         const user = await prisma.user.findUnique({
@@ -105,7 +101,7 @@ export const actions = {
 
         steamID = steamIDResolved;
       } catch (error) {
-        console.log("Failed to resolve user URL: ", error);
+        console.log('Failed to resolve user URL: ', error);
       }
     }
 
@@ -114,34 +110,35 @@ export const actions = {
       await prisma.kOFIDonation.create({
         data: {
           manually_created: true,
-          verification_token: "MANUAL_INSERT_ADMIN_API",
+          verification_token: 'MANUAL_INSERT_ADMIN_API',
           message: message.length > 0 ? message : null,
           amount,
           from_name: displayName,
-          type: "Donation",
+          type: 'Donation',
           timestamp: new Date(),
           is_public: true,
-          url: "",
-          email: "",
-          currency: "EURO",
-          original_JSON: "",
-          message_id: "",
+          url: '',
+          email: '',
+          currency: 'EURO',
+          original_JSON: '',
+          message_id: '',
           is_first_subscription_payment: false,
           is_subscription_payment: false,
-          kofi_transaction_id: "",
-          UserKOFIDonation: steamID ? {
-            create: {
-              userId: BigInt(steamID)
-            }
-          } : undefined
+          kofi_transaction_id: '',
+          UserKOFIDonation: steamID
+            ? {
+                create: {
+                  userId: BigInt(steamID)
+                }
+              }
+            : undefined
         }
       });
     } catch (e) {
       return { insertCustomDonation: { success: false, error: 'Failed to insert donation into the database' } };
-      console.log("Failed to insert donation into the database: ", e);
+      console.log('Failed to insert donation into the database: ', e);
     }
 
-
     return { insertCustomDonation: { success: true } };
-  },
+  }
 } satisfies Actions;
