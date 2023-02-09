@@ -6,7 +6,9 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'$types': './src/types',
+			$types: './src/types',
+			$components: './src/components',
+			$stores: './src/stores'
 		}
 	},
 	preprocess: [
@@ -14,9 +16,7 @@ const config = {
 			postcss: true
 		})
 	],
-	vitePlugin: {
-	}
-
+	vitePlugin: {}
 };
 
 export default config;

@@ -4,6 +4,7 @@
 	import '../app.postcss';
   import { AppBar, AppShell, Avatar, LightSwitch, menu } from "@skeletonlabs/skeleton";
   import { scale, slide } from 'svelte/transition';
+  import { returnURL } from "../stores/mainStore";
 
   import type { LayoutData } from './$types';
 
@@ -47,7 +48,10 @@
 
 
         {:else}
-          <a href="/auth/steam" class="text-sm uppercase btn variant-ghost-success">Login</a>
+          <a href="/auth/steam" on:click={() => {
+            // Set a cookie so we can redirect the user back to the page they were on
+            document.cookie = `returnURL=${window.location.pathname};path=/;max-age=86400`;
+          }} class="text-sm uppercase btn variant-ghost-success">Login</a>
         {/if}
       </svelte:fragment>
     </AppBar>

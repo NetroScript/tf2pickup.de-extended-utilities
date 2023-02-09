@@ -1,14 +1,17 @@
 <script lang="ts">
   import type { PageData } from './$types';
 
+  import { ProgressRadial } from "@skeletonlabs/skeleton";
+
   export let data: PageData;
 
-  console.log(data);
-
-
+  // Redirect to the home page if the user is logged in
+  window.location.href = '/';
 </script>
 
 
 <div class="container h-full mx-auto flex justify-center items-center">
-  <h1>Welcome to the login page, you shouldn't even see this, but I guess you do now. Hello :)</h1>
+  <div class="w-full max-w-[320px] mx-auto space-y-4">
+    <ProgressRadial></ProgressRadial>
+  </div>
 </div>
