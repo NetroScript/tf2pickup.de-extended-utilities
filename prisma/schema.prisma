@@ -41,7 +41,7 @@ model KOFIDonation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  valid            Boolean @default(false)
+  valid            Boolean @default(true)
   manually_created Boolean @default(false)
 
   verification_token            String
@@ -50,7 +50,7 @@ model KOFIDonation {
   type                          String
   is_public                     Boolean
   from_name                     String
-  message                       String
+  message                       String?
   amount                        Float
   url                           String
   email                         String

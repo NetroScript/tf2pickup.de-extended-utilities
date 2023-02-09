@@ -3,7 +3,8 @@ import type { PageServerLoad } from './$types';
 import { authenticateSteamCallback } from "$lib/auth/steam";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "$env/static/private";
-import prisma from "$lib/prisma";
+import prisma from "$lib/database/prisma";
+import { upsertUser } from "../../../../lib/database/user";
 
 export const load = (async ({ params, url, cookies }) => {
 
@@ -14,34 +15,7 @@ export const load = (async ({ params, url, cookies }) => {
     console.log("Steam user authenticated: ", steamUser)
 
     // Upsert the user in the database
-    const user = await prisma.user.upsert({
-      where: {
-        steamId: BigInt(steamUser.steamID)
-      },
-      create: {
-        steamProfile: {
-          create: {
-            steamId: BigInt(steamUser.steamID),
-            username: steamUser.nickname,
-            avatar_small: steamUser.avatar.small,
-            avatar_medium: steamUser.avatar.medium,
-            avatar_full: steamUser.avatar.large,
-            profileUrl: steamUser.url
-          }
-        }
-      },
-      update: {
-        steamProfile: {
-          update: {
-            username: steamUser.nickname,
-            avatar_small: steamUser.avatar.small,
-            avatar_medium: steamUser.avatar.medium,
-            avatar_full: steamUser.avatar.large,
-            profileUrl: steamUser.url
-          }
-        }
-      }
-    })
+    await upsertUser(steamUser);
 
     // Create a JWT token
     const token = jwt.sign({ id: steamUser.steamID }, JWT_SECRET, { expiresIn: '28d' });
@@ -50,7 +24,7 @@ export const load = (async ({ params, url, cookies }) => {
     cookies.set('jwt', token, { maxAge: 1209600, path: '/' });
 
     return {
-      steamUser,
+      success: true
     }
   } catch (e) {
     console.log("Failed to authenticate Steam user: ", e)
