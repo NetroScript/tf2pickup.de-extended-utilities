@@ -27,7 +27,8 @@
 
         // After 10 seconds reset the form information to its initial state
         setTimeout(() => {
-          form[formName] = undefined;
+          if (form)
+            form[formName] = undefined;
         }, 10000);
       };
     }) as SubmitFunction;

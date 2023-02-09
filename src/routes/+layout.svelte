@@ -1,12 +1,12 @@
+<link rel='stylesheet' href='../theme.pcss'>
 <script lang="ts">
-	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
-	import '@skeletonlabs/skeleton/styles/all.css';
-	import '../app.postcss';
+  import '../theme.pcss';
+  import "@skeletonlabs/skeleton/styles/all.css";
+  import "../app.postcss";
   import { AppBar, AppShell, Avatar, LightSwitch, menu } from "@skeletonlabs/skeleton";
-  import { scale, slide } from 'svelte/transition';
-  import { returnURL } from "../stores/mainStore";
+  import { scale, slide } from "svelte/transition";
 
-  import type { LayoutData } from './$types';
+  import type { LayoutData } from "./$types";
 
   export let data: LayoutData;
 
@@ -16,27 +16,39 @@
 <AppShell>
 
   <svelte:fragment slot="header">
-    <AppBar padding="px-4 py-2">
+    <AppBar padding="px-4 py-2" background='bg-surface-50-900-token'>
       <svelte:fragment slot="lead">
-        <a href="/" class="flex align-middle justify-evenly items-center">
-          <img class="h-16 mr-4" src="/tf2pickup.png">
-          <strong class="text-xl uppercase">tf2pickup.de Donations</strong>
+        <a class="align-middle justify-evenly items-center flex " href="/">
+          <img alt="tf2pickup.de Logo" class="h-16 mr-4" src="/tf2pickup.png">
+          <strong class="text-xl uppercase hidden md:block">tf2pickup.de Donations</strong>
         </a>
-
       </svelte:fragment>
+      <div class="flex">
+        {#if data.user && data.user.admin}
+          <a href="/admin" class="text-sm uppercase btn variant-soft">Admin Page</a>
+        {/if}
+        <div class="flex-1"></div>
+        <a class="text-sm uppercase btn variant-soft-success" href="https://ko-fi.com/tf2pickupde">Donate</a>
+      </div>
+
       <svelte:fragment slot="trail">
+
+
         {#if data.user}
 
           <div class="relative">
-            <div on:click={() => {showProfileDropdown=!showProfileDropdown}} class="flex align-middle justify-evenly items-center cursor-pointer">
+            <button on:click={() => {showProfileDropdown=!showProfileDropdown}}
+                    class="flex align-middle justify-evenly items-center cursor-pointer">
               <span class="px-3">{data.user.username}</span>
               <Avatar src="{data.user.avatar.medium}"></Avatar>
-            </div>
+            </button>
 
             {#if showProfileDropdown}
-              <div class="card p-4 shadow-xl text-center absolute right-0 top-[64px] rounded-t-none !ring-0 border-t-0" transition:slide={{duration: 100}}>
+              <div class="card p-4 shadow-xl text-center absolute right-0 top-[64px] rounded-t-none !ring-0 border-t-0 bg-surface-50-900-token"
+                   transition:slide={{duration: 100}}>
                 <div class="flex flex-col gap-4 justify-evenly align-middle items-center">
-                  <a href="/auth/logout" class="text-sm uppercase btn variant-ghost" on:click={data.user = undefined}>Logout</a>
+                  <a href="/auth/logout" class="text-sm uppercase btn variant-ghost"
+                     on:click={data.user = null}>Logout</a>
                   <LightSwitch />
                 </div>
 

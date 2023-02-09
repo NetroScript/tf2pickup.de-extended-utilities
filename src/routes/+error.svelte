@@ -4,5 +4,9 @@
 
 <div class="container h-full mx-auto flex justify-center items-center flex-col">
   <h1>{$page.status}</h1>
-  <span>{$page.error.message}</span>
+  {#if $page.error}
+    <span>{$page.error.message}</span>
+  {:else }
+    <span>Something went wrong</span>
+  {/if}
 </div>

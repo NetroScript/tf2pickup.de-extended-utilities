@@ -1,7 +1,7 @@
 <script lang="ts">
   import PhCheckCircleDuotone from "~icons/ph/check-circle-duotone";
   import PhXCircleDuotone from "~icons/ph/x-circle-duotone";
-  export let successData: { success: boolean, error: string };
+  export let successData: { success: boolean; error: string; } | { success: boolean; error?: undefined; } | undefined;
 
   import { scale, slide } from "svelte/transition";
 

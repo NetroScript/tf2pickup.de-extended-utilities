@@ -14,15 +14,19 @@ export const load = (async ({ params }) => {
 					}
 				}
 			}
+		},
+		orderBy: {
+			createdAt: 'desc'
 		}
 	});
 
 	// Fetch all Costs
-	const costs = await prisma.costTransaction.findMany({});
+	const costs = await prisma.costTransaction.findMany({ orderBy: { createdAt: 'desc' } });
 
 	// Map the donations to a new array
 	const donationsMapped = donations.map((donation) => {
 		return {
+			time: donation.createdAt,
 			display_name: donation.from_name,
 			amount: donation.amount,
 			currency: donation.currency,
@@ -44,6 +48,7 @@ export const load = (async ({ params }) => {
 
 	const costsMapped = costs.map((cost) => {
 		return {
+			time: cost.createdAt,
 			amount: cost.amount,
 			message: cost.description
 		};
@@ -62,9 +67,27 @@ export const load = (async ({ params }) => {
 	// Get the total amount of donations minus the total amount of costs
 	const total = totalDonations - totalCosts;
 
+	// Accumulate the donations using the display_name as the key
+	const donationsAccumulated = donationsMapped.reduce((acc, donation) => {
+		if (acc[donation.display_name]) {
+			acc[donation.display_name].amount += donation.amount;
+		} else {
+			// Do a deep copy of the donation object
+			acc[donation.display_name] = JSON.parse(JSON.stringify(donation));
+		}
+
+		return acc;
+	}, {} as Record<string, (typeof donationsMapped)[0]>);
+
+	// Get the top 3 donators
+	const topDonators = Object.values(donationsAccumulated)
+		.sort((a, b) => b.amount - a.amount)
+		.slice(0, 3);
+
 	return {
 		donations: donationsMapped,
 		costs: costsMapped,
+		topDonators: topDonators,
 		totalDonations,
 		totalCosts,
 		total
