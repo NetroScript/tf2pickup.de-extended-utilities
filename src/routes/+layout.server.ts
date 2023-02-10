@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import prisma from '$lib/database/prisma';
+import prisma from '$lib/server/database/prisma';
 
 export const load = (async ({ cookies }) => {
   // Check if the user is logged in by checking if the JWT token is valid

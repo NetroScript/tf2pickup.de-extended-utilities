@@ -1,7 +1,9 @@
 import type { PageServerLoad, Actions } from './$types';
-import { steamAPI } from '$lib/steamapi';
-import prisma from '$lib/database/prisma';
-import { upsertUser } from '$lib/database/user';
+import { steamAPI } from '$lib/server/steamapi';
+import prisma from '$lib/server/database/prisma';
+import { upsertUser } from '$lib/server/database/user';
+import { eventHandlers } from '../../lib/server/events';
+import type { UserWithSteamProfile } from '../../lib/server/database/user';
 
 export const actions = {
   createUserAccount: async ({ cookies, request }) => {
@@ -78,7 +80,7 @@ export const actions = {
 
     console.log('Creating custom donation: ', userURL, amount, message, displayName);
 
-    let steamID = null;
+    let steamUser: UserWithSteamProfile | null = null;
 
     if (typeof userURL === 'string' && userURL.length > 0) {
       // Resolve the user URL to a SteamID (any input allowed)
@@ -91,15 +93,18 @@ export const actions = {
         const user = await prisma.user.findUnique({
           where: {
             steamId: BigInt(steamIDResolved)
+          },
+          include: {
+            steamProfile: true
           }
         });
 
         if (!user) {
           // Create a new user account
-          await upsertUser(await steamAPI.getUserSummary(steamIDResolved));
+          steamUser = await upsertUser(await steamAPI.getUserSummary(steamIDResolved));
+        } else {
+          steamUser = user;
         }
-
-        steamID = steamIDResolved;
       } catch (error) {
         console.log('Failed to resolve user URL: ', error);
       }
@@ -125,10 +130,10 @@ export const actions = {
           is_first_subscription_payment: false,
           is_subscription_payment: false,
           kofi_transaction_id: '',
-          UserKOFIDonation: steamID
+          UserKOFIDonation: steamUser
             ? {
                 create: {
-                  userId: BigInt(steamID)
+                  userId: BigInt(steamUser.steamId)
                 }
               }
             : undefined
@@ -138,6 +143,28 @@ export const actions = {
       return { insertCustomDonation: { success: false, error: 'Failed to insert donation into the database' } };
       console.log('Failed to insert donation into the database: ', e);
     }
+    eventHandlers.newDonationEvt.post({
+      steamUser,
+      donation: {
+        verification_token: 'MANUAL_INSERT_ADMIN_API',
+        message: message.length > 0 ? message : null,
+        message_id: '',
+        amount: amount.toString(),
+        currency: 'EURO',
+        email: '',
+        from_name: displayName,
+        is_first_subscription_payment: false,
+        is_public: true,
+        is_subscription_payment: false,
+        kofi_transaction_id: '',
+        shipping: null,
+        shop_items: null,
+        tier_name: null,
+        timestamp: new Date().toISOString(),
+        type: 'Donation',
+        url: ''
+      }
+    });
 
     return { insertCustomDonation: { success: true } };
   },

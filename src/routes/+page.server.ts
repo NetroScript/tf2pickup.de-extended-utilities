@@ -1,50 +1,16 @@
 import type { PageServerLoad } from './$types';
-import prisma from '../lib/database/prisma';
+import prisma from '../lib/server/database/prisma';
+import { getDonations, getMinimalDonationInfo, getTopDonators } from '../lib/server/database/donations';
 
 export const load = (async ({ params }) => {
   // Fetch all KOFI donations, and if there is a user associated with it, fetch the user
-  const donations = await prisma.kOFIDonation.findMany({
-    include: {
-      UserKOFIDonation: {
-        include: {
-          user: {
-            include: {
-              steamProfile: true
-            }
-          }
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+  const donations = await getDonations();
 
   // Fetch all Costs
   const costs = await prisma.costTransaction.findMany({ orderBy: { createdAt: 'desc' } });
 
   // Map the donations to a new array
-  const donationsMapped = donations.map((donation) => {
-    return {
-      time: donation.createdAt,
-      display_name: donation.from_name,
-      amount: donation.amount,
-      currency: donation.currency,
-      message: donation.is_public ? donation.message : null,
-      steamUser:
-        donation.UserKOFIDonation.length > 0
-          ? {
-              id: donation.UserKOFIDonation[0].user.steamId.toString(),
-              username: donation.UserKOFIDonation[0].user.steamProfile.username,
-              avatar: {
-                small: donation.UserKOFIDonation[0].user.steamProfile.avatar_small,
-                medium: donation.UserKOFIDonation[0].user.steamProfile.avatar_medium,
-                large: donation.UserKOFIDonation[0].user.steamProfile.avatar_full
-              }
-            }
-          : null
-    };
-  });
+  const donationsMapped = getMinimalDonationInfo(donations);
 
   const costsMapped = costs.map((cost) => {
     return {
@@ -67,22 +33,8 @@ export const load = (async ({ params }) => {
   // Get the total amount of donations minus the total amount of costs
   const total = totalDonations - totalCosts;
 
-  // Accumulate the donations using the display_name as the key
-  const donationsAccumulated = donationsMapped.reduce((acc, donation) => {
-    if (acc[donation.display_name]) {
-      acc[donation.display_name].amount += donation.amount;
-    } else {
-      // Do a deep copy of the donation object
-      acc[donation.display_name] = JSON.parse(JSON.stringify(donation));
-    }
-
-    return acc;
-  }, {} as Record<string, (typeof donationsMapped)[0]>);
-
   // Get the top 3 donators
-  const topDonators = Object.values(donationsAccumulated)
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 3);
+  const topDonators = getMinimalDonationInfo(await getTopDonators(3));
 
   return {
     donations: donationsMapped,

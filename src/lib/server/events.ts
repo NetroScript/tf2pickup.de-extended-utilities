@@ -1,5 +1,5 @@
 import { Evt } from 'evt';
-import type { KOFIDonation } from '../types/Donation';
+import type { KOFIDonation } from '../../types/Donation';
 import type { UserWithSteamProfile } from './database/user';
 
 interface DonationEventPayload {

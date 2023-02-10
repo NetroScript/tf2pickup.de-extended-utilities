@@ -2,11 +2,11 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { KOFIDonationSchema } from '$types/Donation';
 import { KOFI_VERIFICATION_TOKEN } from '$env/static/private';
-import { steamAPI } from '../../../lib/steamapi';
-import prisma from '../../../lib/database/prisma';
-import { upsertUser, type UserWithSteamProfile } from '../../../lib/database/user';
+import { steamAPI } from '../../../lib/server/steamapi';
+import prisma from '../../../lib/server/database/prisma';
+import { upsertUser, type UserWithSteamProfile } from '../../../lib/server/database/user';
 import type { User } from '@prisma/client';
-import { eventHandlers } from '../../../lib/events';
+import { eventHandlers } from '../../../lib/server/events';
 import { Prisma } from '@prisma/client';
 
 export const POST: RequestHandler = (async ({ request }) => {
