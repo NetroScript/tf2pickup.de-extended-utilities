@@ -23,21 +23,21 @@
         <div
           class='font-black drop-shadow' class:negative-balance={data.total < 0}
           class:positive-balance={data.total >= 0}>
-          {data.total}€
+          {data.total.toFixed(2)}€
         </div>
       </div>
       <div class='card variant-glass p-4 space-y-4'>
         Geld gespendet:
         <div
           class='font-black drop-shadow bg-gradient-to-br from-blue-500 to-cyan-300 bg-clip-text text-transparent box-decoration-clone'>
-          {data.totalDonations}€
+          {data.totalDonations.toFixed(2)}€
         </div>
       </div>
       <div class='card variant-glass p-4 space-y-4'>
         Ausgaben:
         <div
           class='font-black drop-shadow bg-gradient-to-br from-red-500 to-yellow-500 bg-clip-text text-transparent box-decoration-clone'>
-          {data.totalCosts}€
+          {data.totalCosts.toFixed(2)}€
         </div>
       </div>
     </ul>
@@ -58,7 +58,7 @@
           <hr class=' min-w-full' />
           <div
             class='font-black drop-shadow donation-text-{index}'>
-            {donator.amount}€
+            {donator.amount.toFixed(2)}€
           </div>
         </div>
       {/each}
@@ -120,7 +120,7 @@
                 </div>
 
                 <div class='card variant-glass p-4 text-green-500 dark:text-green-500 min-w-[72px]'>
-                  {donation.amount}€
+                  {donation.amount.toFixed(2)}€
                 </div>
               </div>
 
@@ -141,7 +141,7 @@
           {#each data.costs as cost}
             <div class='card variant-glass p-4 flex items-center align-middle gap-4'>
               <div class='card variant-glass p-4 text-red-700'>
-                -{cost.amount}€
+                -{cost.amount.toFixed(2)}€
               </div>
               <div class='font-mono flex-1 text-base text-left'>
                 <SvelteMarkdown source='{cost.message}' />

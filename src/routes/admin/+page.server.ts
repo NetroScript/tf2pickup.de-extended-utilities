@@ -140,5 +140,43 @@ export const actions = {
     }
 
     return { insertCustomDonation: { success: true } };
+  },
+  insertCustomPayment: async ({ cookies, request }) => {
+    const data = await request.formData();
+
+    // Check that amount is a valid number
+    if (isNaN(Number((data.get('amount') ?? '') as string))) {
+      return {
+        insertCustomPayment: {
+          success: false,
+          error: 'Invalid amount'
+        }
+      };
+    }
+
+    const amount = Number((data.get('amount') ?? '') as string);
+    const message = (data.get('message') ?? '') as string;
+
+    // If the amount is 0, don't insert the cost
+    if (amount === 0) {
+      return {
+        insertCustomPayment: {
+          success: false,
+          error: 'Amount must be greater than 0'
+        }
+      };
+    }
+
+    console.log('Creating custom cost: ', amount, message);
+
+    // Insert the cost into the database
+    await prisma.costTransaction.create({
+      data: {
+        amount,
+        description: message
+      }
+    });
+
+    return { insertCustomPayment: { success: true } };
   }
 } satisfies Actions;
