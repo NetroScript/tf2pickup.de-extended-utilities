@@ -16,7 +16,7 @@ export type DataBaseDonation = Prisma.KOFIDonationGetPayload<{
   };
 }>;
 
-export const getDonations = async (): Promise<DataBaseDonation[]> => {
+export const getLastNDonations = async (amount: number | undefined = undefined): Promise<DataBaseDonation[]> => {
   // Get the donations from the database
   const donations = await prisma.kOFIDonation.findMany({
     include: {
@@ -32,7 +32,8 @@ export const getDonations = async (): Promise<DataBaseDonation[]> => {
     },
     orderBy: {
       createdAt: 'desc'
-    }
+    },
+    take: amount
   });
 
   // Return the donations

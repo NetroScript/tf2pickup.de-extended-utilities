@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
 import prisma from '../lib/server/database/prisma';
-import { getDonations, getMinimalDonationInfo, getTopDonators } from '../lib/server/database/donations';
+import { getLastNDonations, getMinimalDonationInfo, getTopDonators } from '../lib/server/database/donations';
 
 export const load = (async ({ params }) => {
   // Fetch all KOFI donations, and if there is a user associated with it, fetch the user
-  const donations = await getDonations();
+  const donations = await getLastNDonations();
 
   // Fetch all Costs
   const costs = await prisma.costTransaction.findMany({ orderBy: { createdAt: 'desc' } });

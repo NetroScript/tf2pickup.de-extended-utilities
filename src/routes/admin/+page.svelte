@@ -37,6 +37,7 @@
   const createUserAccount = formResetEnhancementGenerator('createUserAccount');
   const insertCustomDonation = formResetEnhancementGenerator('insertCustomDonation');
   const insertCustomPayment = formResetEnhancementGenerator('insertCustomPayment');
+	const updateDiscordSlashCommands = formResetEnhancementGenerator('updateDiscordSlashCommands');
 
   let markdownText: string;
 
@@ -129,6 +130,14 @@
         <button class='variant-filled-secondary btn max-w-xl'>Submit</button>
       </form>
       <FormSuccess successData={form?.insertCustomPayment} />
+    </div>
+    <div class='self-center justify-self-center variant-glass-surface rounded-xl py-2 px-5 mx-auto my-4'>
+      <h3>Update the discord commands</h3>
+      <form action='?/updateDiscordSlashCommands' class='p-4 flex flex-col gap-4 align-middle items-center justify-evenly'
+            method='POST' use:enhance={updateDiscordSlashCommands}>
+        <button class='variant-filled-secondary btn max-w-xl'>Update</button>
+      </form>
+      <FormSuccess successData={form?.updateDiscordSlashCommands} />
     </div>
   </div>
 </div>

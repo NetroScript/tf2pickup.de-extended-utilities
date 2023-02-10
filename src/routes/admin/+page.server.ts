@@ -4,6 +4,7 @@ import prisma from '$lib/server/database/prisma';
 import { upsertUser } from '$lib/server/database/user';
 import { eventHandlers } from '../../lib/server/events';
 import type { UserWithSteamProfile } from '../../lib/server/database/user';
+import { discordClient } from '../../hooks.server';
 
 export const actions = {
   createUserAccount: async ({ cookies, request }) => {
@@ -124,7 +125,7 @@ export const actions = {
           is_public: true,
           url: '',
           email: '',
-          currency: 'EURO',
+          currency: 'EUR',
           original_JSON: '',
           message_id: '',
           is_first_subscription_payment: false,
@@ -150,7 +151,7 @@ export const actions = {
         message: message.length > 0 ? message : null,
         message_id: '',
         amount: amount.toString(),
-        currency: 'EURO',
+        currency: 'EUR',
         email: '',
         from_name: displayName,
         is_first_subscription_payment: false,
@@ -205,5 +206,15 @@ export const actions = {
     });
 
     return { insertCustomPayment: { success: true } };
+  },
+  updateDiscordSlashCommands: async ({ cookies, request }) => {
+    try {
+      await discordClient.registerSlashCommands();
+
+      return { updateDiscordSlashCommands: { success: true } };
+    } catch (e) {
+      console.log('Failed to update Discord slash commands: ', e);
+      return { updateDiscordSlashCommands: { success: false, error: 'Failed to update Discord slash commands' } };
+    }
   }
 } satisfies Actions;
