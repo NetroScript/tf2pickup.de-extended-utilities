@@ -1,7 +1,15 @@
-import type { PlayerSummary } from "steamapi";
-import prisma from "./prisma";
+import type { PlayerSummary } from 'steamapi';
+import prisma from './prisma';
 
-export const upsertUser = async (steamUser: PlayerSummary) => {
+import type { Prisma } from '@prisma/client';
+
+export type UserWithSteamProfile = Prisma.UserGetPayload<{
+  include: {
+    steamProfile: true;
+  };
+}>;
+
+export const upsertUser = async (steamUser: PlayerSummary): Promise<UserWithSteamProfile> => {
   return await prisma.user.upsert({
     where: {
       steamId: BigInt(steamUser.steamID)
@@ -28,6 +36,9 @@ export const upsertUser = async (steamUser: PlayerSummary) => {
           profileUrl: steamUser.url
         }
       }
+    },
+    include: {
+      steamProfile: true
     }
-  })
-}
+  });
+};

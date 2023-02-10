@@ -1,8 +1,6 @@
-<link href='../theme.pcss' rel='stylesheet'>
 <script lang='ts'>
-	import '../theme.pcss';
+	import '../app.pcss';
 	import '@skeletonlabs/skeleton/styles/all.css';
-	import '../app.postcss';
 	import { AppBar, AppShell, Avatar, LightSwitch, menu } from '@skeletonlabs/skeleton';
 	import { scale, slide } from 'svelte/transition';
 

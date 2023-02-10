@@ -30,7 +30,7 @@ export const load = (async ({ params }) => {
       display_name: donation.from_name,
       amount: donation.amount,
       currency: donation.currency,
-      message: donation.message,
+      message: donation.is_public ? donation.message : null,
       steamUser:
         donation.UserKOFIDonation.length > 0
           ? {

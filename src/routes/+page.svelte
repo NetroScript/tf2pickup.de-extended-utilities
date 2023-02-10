@@ -9,8 +9,6 @@
 
 	export let data: PageData;
 
-	console.log(data);
-
 	let tabSet = 0;
 
 </script>
@@ -121,7 +119,7 @@
                   </div>
                 </div>
 
-                <div class='card variant-glass p-4 text-green-500 dark:text-green-500'>
+                <div class='card variant-glass p-4 text-green-500 dark:text-green-500 min-w-[72px]'>
                   {donation.amount}€
                 </div>
               </div>
