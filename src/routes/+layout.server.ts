@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$env/static/private';
-import { error } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import prisma from '$lib/server/database/prisma';
 

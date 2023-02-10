@@ -8,7 +8,7 @@
 
 	export let data: LayoutData;
 
-	let showProfileDropdown = true;
+	let showProfileDropdown = false;
 
 </script>
 <AppShell>
@@ -21,7 +21,7 @@
           <strong class='text-xl uppercase hidden md:block'>tf2pickup.de Spenden</strong>
         </a>
       </svelte:fragment>
-      <div class='flex'>
+      <div class='flex space-x-2'>
         {#if data.user && data.user.admin}
           <a href='/admin' class='text-sm uppercase btn variant-soft'>Administration</a>
         {/if}
