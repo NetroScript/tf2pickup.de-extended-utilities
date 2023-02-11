@@ -20,3 +20,7 @@
     </article>
   </div>
 </div>
+
+<svelte:head>
+  <title>tf2pickup.de - Info Page</title>
+</svelte:head>

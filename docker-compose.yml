@@ -1,0 +1,14 @@
+version: '2.4'
+
+services:
+  tf2pickupde-utility-bot:
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - .env
+    # Mount the database file to the container
+    volumes:
+      - type: bind
+        source: ./database.sqlite
+        target: /app/prisma/data.db

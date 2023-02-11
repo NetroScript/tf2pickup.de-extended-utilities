@@ -5,22 +5,23 @@ import { KOFI_VERIFICATION_TOKEN } from '$env/static/private';
 import { steamAPI } from '../../../lib/server/steamapi';
 import prisma from '../../../lib/server/database/prisma';
 import { upsertUser, type UserWithSteamProfile } from '../../../lib/server/database/user';
-import type { User } from '@prisma/client';
 import { eventHandlers } from '../../../lib/server/events';
 import { Prisma } from '@prisma/client';
 
 export const POST: RequestHandler = (async ({ request }) => {
   try {
-    const data = await request.json();
+    // The request is a POST with application/x-www-form-urlencoded content type
+    // It should contain a JSON string in the 'data' key
+    const parsedData = await request.formData();
 
     // Data should also have a top level 'data' key
-    if (!data.data) {
+    if (!parsedData.has('data')) {
       return json({ success: false, error: 'Missing data' }, { status: 400 });
     }
 
     // Now we use the zod object to validate the data
     try {
-      const donation = KOFIDonationSchema.parse(data.data);
+      const donation = KOFIDonationSchema.parse(JSON.parse(parsedData.get('data')! as string));
 
       // Check if the donation verification_token is the same we have setup locally
       if (donation.verification_token !== KOFI_VERIFICATION_TOKEN) {
@@ -107,7 +108,9 @@ export const POST: RequestHandler = (async ({ request }) => {
       return json({ success: false, error: 'Invalid KO-FI Data' }, { status: 400 });
     }
   } catch (error) {
-    return json({ success: false, error: 'Invalid JSON' }, { status: 400 });
+    // Log the error
+    console.log('Error parsing the request', error);
+    return json({ success: false, error: 'Invalid FormData' }, { status: 400 });
   }
 
   return json({ success: true });

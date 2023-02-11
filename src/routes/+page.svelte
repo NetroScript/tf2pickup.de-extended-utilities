@@ -6,40 +6,43 @@
 	import PhCoinsDuotone from '~icons/ph/coins-duotone';
 	import PhPresentationChartDuotone from '~icons/ph/presentation-chart-duotone';
 	import { slide } from 'svelte/transition';
+	import { openTab } from '../stores/mainStore';
 
 	export let data: PageData;
 
-	let tabSet = 0;
 
 </script>
 
+<svelte:head>
+  <title>tf2pickup.de - Donation Overview Page</title>
+</svelte:head>
 
 <div class='container max-w-[1200px] mx-auto px-4 py-10 !pt-8 md:py-20 space-y-10'>
   <section class='text-center space-y-3'>
     <h2>Kennzahlen</h2>
     <ul class='grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[800px] mx-auto text-2xl'>
-      <div class='card variant-glass p-4 space-y-4'>
+      <li class='card variant-glass p-4 space-y-4'>
         Aktueller Stand:
         <div
           class='font-black drop-shadow' class:negative-balance={data.total < 0}
           class:positive-balance={data.total >= 0}>
           {data.total.toFixed(2)}€
         </div>
-      </div>
-      <div class='card variant-glass p-4 space-y-4'>
+      </li>
+      <li class='card variant-glass p-4 space-y-4'>
         Geld gespendet:
         <div
           class='font-black drop-shadow bg-gradient-to-br from-blue-500 to-cyan-300 bg-clip-text text-transparent box-decoration-clone'>
           {data.totalDonations.toFixed(2)}€
         </div>
-      </div>
-      <div class='card variant-glass p-4 space-y-4'>
+      </li>
+      <li class='card variant-glass p-4 space-y-4'>
         Ausgaben:
         <div
           class='font-black drop-shadow bg-gradient-to-br from-red-500 to-yellow-500 bg-clip-text text-transparent box-decoration-clone'>
           {data.totalCosts.toFixed(2)}€
         </div>
-      </div>
+      </li>
     </ul>
   </section>
 
@@ -48,7 +51,7 @@
 
     <ul class='grid grid-cols-1 grid-flow-row-dense md:grid-cols-3 gap-4 mx-auto text-2xl'>
       {#each data.topDonators as donator, index}
-        <div
+        <li
           class='card variant-glass p-4 space-y-4 flex flex-col align-middle items-center justify-evenly donator-{index}'>
           <div class='flex align-middle items-center text-center'>
             <Avatar initials='{donator.display_name[0]}' class='mr-3 min-w-[3em]'
@@ -60,12 +63,12 @@
             class='font-black drop-shadow donation-text-{index}'>
             {donator.amount.toFixed(2)}€
           </div>
-        </div>
+        </li>
       {/each}
     </ul>
   </section>
 
-  <section class='card variant-glass space-y-3 overflow-hidden !ring-1 drop-shadow-xl'>
+  <section class='card variant-soft space-y-3 overflow-hidden !ring-1 drop-shadow-xl'>
     <div class='block flex'>
       <div class='bg-surface-50-900-token flex-1 lg:flex-0'>
         <TabGroup active='variant-filled-primary'
@@ -74,7 +77,7 @@
                   hover='hover:variant-soft-primary'
                   justify='justify-center'
                   rounded=''>
-          <Tab bind:group={tabSet} name='tab1' value={0}>
+          <Tab bind:group={$openTab} name='tab1' value={0}>
             <svelte:fragment slot='lead'>
               <div class='flex justify-center'>
                 <PhCoinsDuotone style='font-size: 2em;' />
@@ -82,7 +85,7 @@
             </svelte:fragment>
             Spenden
           </Tab>
-          <Tab bind:group={tabSet} name='tab2' value={1}>
+          <Tab bind:group={$openTab} name='tab2' value={1}>
             <svelte:fragment slot='lead'>
               <div class='flex justify-center'>
                 <PhPresentationChartDuotone style='font-size: 2em; transform: scaleX(-1);' />
@@ -95,12 +98,12 @@
     </div>
 
 
-    {#if tabSet === 0}
+    {#if $openTab === 0}
       <section class='text-center space-y-3 p-3' in:slide={{delay: 300, duration: 200}} out:slide={{duration:200}}>
         <h2 class='mb-8'>Spenden</h2>
         <ul class='flex flex-col mx-auto text-2xl gap-4'>
           {#each data.donations as donation}
-            <div class='card variant-glass p-2 '>
+            <li class='card variant-ghost drop-shadow p-2 '>
               <div class='flex items-center align-middle gap-4'>
                 <Avatar initials='{donation.display_name[0]}' class='mr-3 min-w-[3em]'
                         src='{donation.steamUser?.avatar.medium}' />
@@ -125,7 +128,7 @@
               </div>
 
 
-            </div>
+            </li>
           {/each}
           {#if data?.donations.length === 0}
             <div class='card variant-glass p-4 text-center'>
@@ -134,22 +137,22 @@
           {/if}
         </ul>
       </section>
-    {:else if tabSet === 1}
+    {:else if $openTab === 1}
       <section class='text-center space-y-3 p-3' in:slide={{delay: 300, duration: 200}} out:slide={{duration:200}}>
         <h2 class='mb-8'>Kosten</h2>
         <ul class='flex flex-col mx-auto text-2xl gap-4'>
           {#each data.costs as cost}
-            <div class='card variant-glass p-4 flex items-center align-middle gap-4'>
+            <li class='card variant-ghost drop-shadow p-4 flex items-center align-middle gap-4'>
               <div class='card variant-glass p-4 text-red-700'>
                 -{cost.amount.toFixed(2)}€
               </div>
-              <div class='font-mono flex-1 text-base text-left'>
+              <div class='font-mono flex-1 text-base text-left prose dark:prose-invert prose-neutral max-w-none'>
                 <SvelteMarkdown source='{cost.message}' />
-                <div class='text-xs text-gray-500 text-center'>
+                <div class='text-xs text-gray-500 text-center not-prose'>
                   {(cost.time).toLocaleString("de")}
                 </div>
               </div>
-            </div>
+            </li>
           {/each}
           {#if data.costs.length === 0}
             <div class='card variant-glass p-4 text-center'>
@@ -195,4 +198,5 @@
     .donator-1 {
         @apply font-bold;
     }
+
 </style>

@@ -43,6 +43,10 @@
 
 </script>
 
+<svelte:head>
+  <title>tf2pickup.de - Admin Page</title>
+</svelte:head>
+
 <div class='container h-full mx-auto flex justify-center items-center'>
   <div class='card px-4 py-1 w-full my-4'>
     <div class='self-center justify-self-center variant-glass-surface rounded-xl py-2 px-5 mx-auto my-4'>
@@ -123,7 +127,7 @@
         </label>
         <div class='min-w-full'>
           <span>Preview</span>
-          <div class='card p-3'>
+          <div class='card p-3 prose dark:prose-invert prose-neutral max-w-none'>
             <SvelteMarkdown source='{markdownText}' />
           </div>
         </div>

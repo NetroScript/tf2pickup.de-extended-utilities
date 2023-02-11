@@ -4,6 +4,7 @@ import type { Command, SlashCommand } from './types';
 import { topDonators } from './commands/topDonations';
 import type { DonationEventPayload } from '../events';
 import { eventHandlers } from '../events';
+import { dev } from '$app/environment';
 
 export class DiscordClient {
   client: Client;
@@ -129,11 +130,20 @@ export class DiscordClient {
         text: `Vielen Dank an ${event.donation.from_name ?? 'diesen anonymen Spender'} für die Spende!`
       });
 
-    // Send this to the #spenden-tracking channel
-    await this.client.channels.fetch(DISCORD_DONAION_CHANNEL_ID).then((channel) => {
-      if (channel && channel.isTextBased()) {
-        channel.send({ embeds: [embed] });
-      }
-    });
+    if (dev) {
+      // Send it privately to a user
+      await this.client.users.fetch('187986102198599680').then((user) => {
+        if (user) {
+          user.send({ embeds: [embed] });
+        }
+      });
+    } else {
+      // Send this to the #spenden-tracking channel
+      await this.client.channels.fetch(DISCORD_DONAION_CHANNEL_ID).then((channel) => {
+        if (channel && channel.isTextBased()) {
+          channel.send({ embeds: [embed] });
+        }
+      });
+    }
   }
 }

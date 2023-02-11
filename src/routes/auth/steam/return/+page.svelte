@@ -3,8 +3,6 @@
 
   import { ProgressRadial } from "@skeletonlabs/skeleton";
 
-  export let data: PageData;
-
   // Redirect to the home page if the user is logged in
   window.location.href = '/';
 </script>
