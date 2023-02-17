@@ -8,7 +8,7 @@ It is directly integrated with Ko-Fi and will add donations to the main page, an
 
 Ko-Fi donations can be linked to Steam accounts (by putting in your Steam profile or Steam ID as first thing of the user provided message).
 
-Later it is planned that users can use this to then "buy" small things with the money they donated, to motivate donations (say having an admin play medic for example).
+Later it is planned that users can use this to then "buy" small things with the money they donated, to motivate donations (say having an admin play medic for example). I also want to move all discord commands from my older previous bot, to this bot, modernizing them with slash commands.
 
 The website has an additional (currently quite simple) admin interface, which allows to manually enter donations (should the website not have been online when a donation was made) and to also enter costs which running the website (and gameservers) have.
 
